@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Интерактивная таблица</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #f9fafb, #e5e7eb);
+      padding: 30px;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    input, select, button {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+      transform: scale(1.05);
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 0 auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    td {
+      width: 50px;
+      height: 50px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    td:hover {
+      transform: scale(1.05);
+    }
+
+    #result {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 20px;
+      background: #f3f4f6;
+      padding: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Интерактивная таблица</h2>
+
+  <div class="controls">
+    <label>Строки: <input type="number" id="rows" value="4"></label>
+    <label>Столбцы: <input type="number" id="cols" value="4"></label>
+    <label>Цвет: 
+      <select id="colorPicker">
+        <option value="yellow">Жёлтый</option>
+        <option value="lightgreen">Зелёный</option>
+        <option value="lightblue">Синий</option>
+        <option value="lightcoral">Красный</option>
+        <option value="violet">Фиолетовый</option>
+      </select>
+    </label>
+    <button onclick="createTable()">Создать таблицу</button>
+    <button onclick="countStats()">Посчитать статистику</button>
+  </div>
+
+  <div id="tableContainer"></div>
+  <div id="result"></div>
+
+  <script>
+    const colorNames = {
+      "yellow": "Жёлтый",
+      "lightgreen": "Зелёный",
+      "lightblue": "Синий",
+      "lightcoral": "Красный",
+      "violet": "Фиолетовый"
+    };
+
+    function createTable() {
+      const rows = document.getElementById("rows").value;
+      const cols = document.getElementById("cols").value;
+      const container = document.getElementById("tableContainer");
+      container.innerHTML = "";
+
+      const table = document.createElement("table");
+
+      for (let i = 0; i < rows; i++) {
+        const tr = document.createElement("tr");
+        for (let j = 0; j < cols; j++) {
+          const td = document.createElement("td");
+
+          td.addEventListener("click", function () {
+            const selectedColor = document.getElementById("colorPicker").value;
+            if (this.style.backgroundColor === selectedColor) {
+              this.style.backgroundColor = "";
+            } else {
+              this.style.backgroundColor = selectedColor;
+            }
+          });
+
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+
+      container.appendChild(table);
+    }
+
+    function countStats() {
+      const cells = document.querySelectorAll("td");
+      const total = cells.length;
+      let empty = 0;
+      let colored = 0;
+      let colorCounts = {};
+
+      cells.forEach(cell => {
+        if (!cell.style.backgroundColor) {
+          empty++;
+        } else {
+          colored++;
+          let color = cell.style.backgroundColor;
+          colorCounts[color] = (colorCounts[color] || 0) + 1;
+        }
+      });
+
+      let resultText = `
+        Всего ячеек: ${total}<br>
+        Закрашенных: ${colored}<br>
+        Пустых: ${empty}<br><br>
+        <b>По цветам:</b><br>
+      `;
+
+      for (let color in colorCounts) {
+        let rusName = colorNames[color] || color; 
+        resultText += `${rusName}: ${colorCounts[color]}<br>`;
+      }
+
+      document.getElementById("result").innerHTML = resultText;
+    }
+  </script>
+</body>
+</html>
